@@ -1,3 +1,5 @@
+use std::ops::Add;
+
 #[derive(Debug, PartialEq)]
 enum Token {
     Plus,
@@ -40,6 +42,31 @@ impl<'a> Lexer<'a> {
 
     fn advance(&mut self) {
         self.position += 1;
+    }
+
+    fn parse_num(&mut self) -> Token {
+        let mut digits = String::new();
+
+        loop {
+            let char = self.input
+                .chars()
+                .nth(self.position);
+            
+            if let None = char {
+                break;
+            }
+
+            let c = char.unwrap();
+            
+            if !c.is_digit(10) {
+                break;
+            }
+
+            digits.push(c);
+            self.advance();
+        }
+
+        Token::Integer(digits.parse::<i32>().unwrap())
     }
 
     fn next_token(&mut self) -> Token {
@@ -123,7 +150,9 @@ impl<'a> Lexer<'a> {
                     self.advance();
                     Token::Dot
                 },
-                // // '0'..='9' => parse_num(chars_iter.clone()),
+                '0'..='9' => {
+                    self.parse_num()
+                },
                 // _ => panic!("unknown character: '{}'", char)
                 _ => {
                     self.advance();
@@ -137,7 +166,7 @@ impl<'a> Lexer<'a> {
 }
 
 fn main() {
-    let input = "+-*/=!@\"?<>{}()[].";
+    let input = "123+123=246";
     let mut lexer = Lexer::new(input);
 
     loop {
