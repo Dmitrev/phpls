@@ -1,4 +1,3 @@
-use std::ops::Add;
 
 #[derive(Debug, PartialEq)]
 enum Token {
